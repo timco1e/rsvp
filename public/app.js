@@ -8,20 +8,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const pinScreen = document.getElementById('pin-screen');
     const rsvpScreen = document.getElementById('rsvp-screen');
     const confirmationScreen = document.getElementById('confirmation-screen');
+    const updateRequestScreen = document.getElementById('update-request-screen');
     const pinInput = document.getElementById('pin-input');
     const submitPinBtn = document.getElementById('submit-pin');
     const pinError = document.getElementById('pin-error');
     const rsvpForm = document.getElementById('rsvp-form');
     const guestsContainer = document.getElementById('guests-container');
     const backButton = document.getElementById('back-button');
-    const startOverButton = document.getElementById('start-over');
+    const mainWebsiteBtn = document.getElementById('main-website-btn');
+    const accommodationsBtn = document.getElementById('accommodations-btn');
+    const scheduleBtn = document.getElementById('schedule-btn');
+    const requestUpdateBtn = document.getElementById('request-update-btn');
+    const backToConfirmationBtn = document.getElementById('back-to-confirmation-btn');
     const loadingIndicator = document.getElementById('loading');
     const invitationDetails = document.getElementById('invitation-details');
     const confirmationDetails = document.getElementById('confirmation-details');
+    const calendarContainer = document.getElementById('calendar-container');
+    const sharingContainer = document.getElementById('sharing-container');
+    const updateRequestContainer = document.getElementById('update-request-container');
+    
+    // Initialize calendar and sharing functionality
+    const icsGenerator = new ICSGenerator();
+    window.invitationSharing = new InvitationSharing();
     
     // State variables
     let currentInviteId = null;
     let currentGuests = [];
+    let currentPin = null;
+    let hasSubmitted = false;
     
     // Format PIN input to uppercase
     pinInput.addEventListener('input', (e) => {
@@ -36,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       
+      currentPin = pin;
       fetchInvitation(pin);
     });
     
@@ -57,11 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
       showScreen(pinScreen);
     });
     
-    // Start over button
-    startOverButton.addEventListener('click', () => {
-      resetForm();
-      showScreen(pinScreen);
-    });
+    // Request update button
+    if (requestUpdateBtn) {
+      requestUpdateBtn.addEventListener('click', () => {
+        showUpdateRequestForm();
+      });
+    }
+    
+    // Back to confirmation button
+    if (backToConfirmationBtn) {
+      backToConfirmationBtn.addEventListener('click', () => {
+        showScreen(confirmationScreen);
+      });
+    }
     
     // Fetch invitation details with PIN
     async function fetchInvitation(pin) {
@@ -174,11 +197,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <label>Will you attend our wedding celebration?</label>
             <div class="radio-group">
               <label>
-                <input type="radio" name="rsvp-status-${index}" value="Yes" ${guest.rsvpStatus === 'Yes' ? 'checked' : ''} required>
+                <input type="radio" name="rsvp-status-${index}" value="Yes" ${guest.rsvpStatus === 'Yes' ? 'checked' : ''} required ${hasSubmitted ? 'disabled' : ''}>
                 Yes
               </label>
               <label>
-                <input type="radio" name="rsvp-status-${index}" value="No" ${guest.rsvpStatus === 'No' ? 'checked' : ''}>
+                <input type="radio" name="rsvp-status-${index}" value="No" ${guest.rsvpStatus === 'No' ? 'checked' : ''} ${hasSubmitted ? 'disabled' : ''}>
                 No
               </label>
             </div>
@@ -186,37 +209,40 @@ document.addEventListener('DOMContentLoaded', () => {
           
           <div class="form-group" id="events-${index}" ${guest.rsvpStatus === 'No' ? 'style="display:none;"' : ''}>
             <label>Attending Friday?</label>
+            <p class="event-description">Welcome drinks and casual dinner at Ballymaloe House</p>
             <div class="radio-group">
               <label>
-                <input type="radio" name="event-friday-${index}" value="Yes" ${guest.eventAttendance && guest.eventAttendance.includes('Friday') ? 'checked' : ''}>
+                <input type="radio" name="event-friday-${index}" value="Yes" ${guest.eventAttendance && guest.eventAttendance.includes('Friday') ? 'checked' : ''} ${hasSubmitted ? 'disabled' : ''}>
                 Yes
               </label>
               <label>
-                <input type="radio" name="event-friday-${index}" value="No" ${guest.eventAttendance && !guest.eventAttendance.includes('Friday') ? 'checked' : ''}>
+                <input type="radio" name="event-friday-${index}" value="No" ${guest.eventAttendance && !guest.eventAttendance.includes('Friday') ? 'checked' : ''} ${hasSubmitted ? 'disabled' : ''}>
                 No
               </label>
             </div>
             
             <label>Attending Saturday?</label>
+            <p class="event-description">Wedding ceremony and reception at Ballymaloe House</p>
             <div class="radio-group">
               <label>
-                <input type="radio" name="event-saturday-${index}" value="Yes" ${guest.eventAttendance && guest.eventAttendance.includes('Saturday') ? 'checked' : ''}>
+                <input type="radio" name="event-saturday-${index}" value="Yes" ${guest.eventAttendance && guest.eventAttendance.includes('Saturday') ? 'checked' : ''} checked ${hasSubmitted ? 'disabled' : ''}>
                 Yes
               </label>
               <label>
-                <input type="radio" name="event-saturday-${index}" value="No" ${guest.eventAttendance && !guest.eventAttendance.includes('Saturday') ? 'checked' : ''}>
+                <input type="radio" name="event-saturday-${index}" value="No" ${guest.eventAttendance && !guest.eventAttendance.includes('Saturday') ? 'checked' : ''} ${hasSubmitted ? 'disabled' : ''}>
                 No
               </label>
             </div>
             
             <label>Attending Sunday?</label>
+            <p class="event-description">Farewell brunch at Ballymaloe House</p>
             <div class="radio-group">
               <label>
-                <input type="radio" name="event-sunday-${index}" value="Yes" ${guest.eventAttendance && guest.eventAttendance.includes('Sunday') ? 'checked' : ''}>
+                <input type="radio" name="event-sunday-${index}" value="Yes" ${guest.eventAttendance && guest.eventAttendance.includes('Sunday') ? 'checked' : ''} ${hasSubmitted ? 'disabled' : ''}>
                 Yes
               </label>
               <label>
-                <input type="radio" name="event-sunday-${index}" value="No" ${guest.eventAttendance && !guest.eventAttendance.includes('Sunday') ? 'checked' : ''}>
+                <input type="radio" name="event-sunday-${index}" value="No" ${guest.eventAttendance && !guest.eventAttendance.includes('Sunday') ? 'checked' : ''} ${hasSubmitted ? 'disabled' : ''}>
                 No
               </label>
             </div>
@@ -224,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           <div class="form-group" id="dietary-${index}" ${guest.rsvpStatus === 'No' ? 'style="display:none;"' : ''}>
             <label>Any dietary requirements?</label>
-            <textarea name="dietary-${index}" placeholder="Please let us know of any allergies or dietary preferences">${guest.dietaryRequirements || ''}</textarea>
+            <textarea name="dietary-${index}" placeholder="Please let us know of any allergies or dietary preferences" ${hasSubmitted ? 'readonly' : ''}>${guest.dietaryRequirements || ''}</textarea>
           </div>
         `;
         
@@ -247,6 +273,23 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         });
       });
+      
+      // If already submitted, hide the submit button and show read-only message
+      if (hasSubmitted) {
+        const submitButton = document.querySelector('#rsvp-form .submit-button');
+        if (submitButton) {
+          submitButton.style.display = 'none';
+        }
+        
+        const readOnlyMessage = document.createElement('div');
+        readOnlyMessage.className = 'read-only-message';
+        readOnlyMessage.innerHTML = `
+          <p>Your RSVP has been submitted. This is a read-only view of your choices.</p>
+          <p>If you need to make changes, please use the "Request Update" button on the confirmation screen.</p>
+        `;
+        
+        guestsContainer.appendChild(readOnlyMessage);
+      }
     }
     
     // Submit RSVP information
@@ -274,6 +317,30 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             `;
             
+            // Add calendar link for test guest
+            if (rsvpStatus === 'Yes') {
+              const testEvents = ['Saturday'];
+              calendarContainer.innerHTML = `
+                <h3>Add to Calendar</h3>
+                ${icsGenerator.generateEventLinks(testEvents)}
+              `;
+            } else {
+              calendarContainer.innerHTML = '';
+            }
+            
+            // Add sharing options for test guest
+            const testInviteDetails = { pin: 'TEST' };
+            const testGuests = [{ name: 'Test Guest', rsvpStatus, eventAttendance: ['Saturday'] }];
+            window.invitationSharing.prepareShareableData(testInviteDetails, testGuests);
+            sharingContainer.innerHTML = window.invitationSharing.generateSharingButtons();
+            
+            // Set up update request form
+            if (window.updateRequestForm) {
+              window.updateRequestForm.setRequestData('TEST', testGuests);
+              updateRequestContainer.innerHTML = window.updateRequestForm.generateUpdateRequestForm();
+            }
+            
+            hasSubmitted = true;
             showScreen(confirmationScreen);
             showLoading(false);
             return;
@@ -317,6 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           return {
             id: guest.id,
+            name: guest.name,
             rsvpStatus,
             eventAttendance,
             dietaryRequirements
@@ -349,8 +417,27 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const data = await response.json();
         
+        // Mark as submitted to make form read-only on future views
+        hasSubmitted = true;
+        
+        // Update current guests with the submitted data
+        currentGuests = updatedGuests;
+        
         // Show confirmation screen
         displayConfirmation(updatedGuests);
+        
+        // Generate calendar links
+        generateCalendarLinks(updatedGuests);
+        
+        // Generate sharing options
+        generateSharingOptions(updatedGuests);
+        
+        // Set up update request form
+        if (window.updateRequestForm) {
+          window.updateRequestForm.setRequestData(currentPin, updatedGuests);
+          updateRequestContainer.innerHTML = window.updateRequestForm.generateUpdateRequestForm();
+        }
+        
         showScreen(confirmationScreen);
       } catch (error) {
         console.error('Submit RSVP error:', error);
@@ -365,19 +452,17 @@ document.addEventListener('DOMContentLoaded', () => {
       let html = '';
       
       guests.forEach(guest => {
-        const guestName = currentGuests.find(g => g.id === guest.id)?.name || 'Guest';
-        
         html += `<div class="confirmation-guest">
-          <h3>${guestName}</h3>`;
+          <h3>${guest.name}</h3>`;
           
         if (guest.rsvpStatus === 'Yes') {
           html += `<p><strong>RSVP:</strong> Attending</p>`;
           
           // Show which events they're attending
           const events = [];
-          if (guest.eventAttendance.includes('Friday')) events.push('Friday');
-          if (guest.eventAttendance.includes('Saturday')) events.push('Saturday');
-          if (guest.eventAttendance.includes('Sunday')) events.push('Sunday');
+          if (guest.eventAttendance.includes('Friday')) events.push('Friday - Welcome Drinks');
+          if (guest.eventAttendance.includes('Saturday')) events.push('Saturday - Wedding Ceremony & Reception');
+          if (guest.eventAttendance.includes('Sunday')) events.push('Sunday - Farewell Brunch');
           
           if (events.length > 0) {
             html += `<p><strong>Events:</strong> ${events.join(', ')}</p>`;
@@ -398,38 +483,90 @@ document.addEventListener('DOMContentLoaded', () => {
       confirmationDetails.innerHTML = html;
     }
     
+    // Generate calendar links
+    function generateCalendarLinks(guests) {
+      // Find attending guests and their events
+      const attendingGuests = guests.filter(guest => guest.rsvpStatus === 'Yes');
+      
+      if (attendingGuests.length === 0) {
+        calendarContainer.innerHTML = '';
+        return;
+      }
+      
+      // Get all unique events that at least one guest is attending
+      const allEvents = new Set();
+      attendingGuests.forEach(guest => {
+        guest.eventAttendance.forEach(event => allEvents.add(event));
+      });
+      
+      if (allEvents.size === 0) {
+        calendarContainer.innerHTML = '';
+        return;
+      }
+      
+      // Generate calendar links
+      calendarContainer.innerHTML = `
+        <h3>Add to Calendar</h3>
+        ${icsGenerator.generateEventLinks(Array.from(allEvents))}
+      `;
+    }
+    
+    // Generate sharing options
+    function generateSharingOptions(guests) {
+      // Prepare invitation data for sharing
+      const inviteDetails = { pin: currentPin };
+      window.invitationSharing.prepareShareableData(inviteDetails, guests);
+      
+      // Generate sharing buttons
+      sharingContainer.innerHTML = window.invitationSharing.generateSharingButtons();
+    }
+    
+    // Show update request form
+    function showUpdateRequestForm() {
+      if (updateRequestScreen) {
+        showScreen(updateRequestScreen);
+      }
+    }
+    
     // Helper function to show a specific screen
     function showScreen(screen) {
       // Hide all screens
-      [pinScreen, rsvpScreen, confirmationScreen].forEach(s => {
-        s.classList.remove('active');
+      [pinScreen, rsvpScreen, confirmationScreen, updateRequestScreen].forEach(s => {
+        if (s) s.classList.remove('active');
       });
       
       // Show the specified screen
-      screen.classList.add('active');
+      if (screen) screen.classList.add('active');
     }
     
     // Show/hide loading indicator
     function showLoading(show) {
-      loadingIndicator.style.display = show ? 'flex' : 'none';
+      if (loadingIndicator) {
+        loadingIndicator.style.display = show ? 'flex' : 'none';
+      }
     }
     
     // Show error message
     function showError(message) {
-      pinError.textContent = message;
-      pinError.style.display = 'block';
+      if (pinError) {
+        pinError.textContent = message;
+        pinError.style.display = 'block';
+      }
     }
     
     // Hide error message
     function hideError() {
-      pinError.style.display = 'none';
+      if (pinError) {
+        pinError.style.display = 'none';
+      }
     }
     
-    // Reset form state
+    // Reset form
     function resetForm() {
-      pinInput.value = '';
+      if (pinInput) pinInput.value = '';
       currentInviteId = null;
       currentGuests = [];
+      currentPin = null;
       hideError();
     }
-  });
+});
