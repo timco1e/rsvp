@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--                                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                          
+                                                                                                   @@@@@@@@@                                                                                                                                              
+                                                                                                 @@       @@                                                                                                                                              
+                                                                                               @@@         @@                                                                                                                                             
+                                                                                              @@@          @@                                                                                                                                             
+                                                                        @@@                   @@          @@                                                                                                                                              
+                                                                       @@     @              @@           @@                                                                                                                                              
+                                                                       @@                    @@          @@@                                                                                                                                              
+                                                                       @@         @          @           @@                                                                                                                                               
+                                                                       @@@                  @@          @@@                                                                                                                                               
+                                                                        @@                  @@         @@@                                                                                                                                                
+                                                                        @@                  @@        @@@                                                                                                                                                 
+                                                                        @@            @@    @        @@@                                                                                                                                                  
+                                                                         @@                @@        @@@                                                                                                                                                  
+                                                                          @@               @@       @@@                                                                                                                                                   
+                                                                           @@              @@      @@@                                                                                                                                                    
+                                                                            @@             @      @@@                                                         @                                                                                           
+                                                                             @@           @@     @@@                                                         @@                                                                                           
+                                                                             @@@         @@     @@@                                                          @                                                                                            
+                                                                               @@@      @@@    @@@                                                          @@                                                                                            
+                                                                                @@@@@ @@@@    @@@                                                           @@                                                                                            
+                                                                                    @@@      @@@                                                            @@                                                                                            
+                                                                                            @@@                                                            @@@                                                                                            
+                                                                                           @@@                                                             @@@                   @@@@                                                                     
+                                                                                          @@@                                                              @@@         @   @@@  @@@                                                                       
+                                                                                         @@@                  @@@       @@@                                @@@  @@  @@@@ @@@@   @@ @@@@                                                                   
+                                                                                        @@@                   @@@        @@                        @@      @@@ @@@@ @@ @@@@@    @@@@@                                                                     
+                                                                                       @@@                    @@@        @@@                      @@@       @@@@@@@@@@  @@                                                                                
+                                                                                      @@@                     @@@        @@@@@@@@           @@@@  @@@        @@@                                                                                          
+                                                                                     @@@                      @@@    @@@@@@@   @@          @@@ @@@@@@                                                                                                     
+                                                                                     @@                       @@@  @ @@@@ @     @@@         @@@@@@@@@                                                                                                     
+                                                                                    @@@                       @@@ @@  @@@ @     @@@@              @@@                                                                                                     
+                                                                                    @@                         @@@ @@@@@                          @@@                                                                                                     
+                                                                                   @@                           @@@                               @@@                                                                                                     
+                                                                                  @@                                                                                                                                                                      
+                                                                                  @@                                                                                                                                                                      
+                                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                          
+-->                                                                                                                                                                                                                                                      
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tim & Aoife's Wedding RSVP</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Tim & Aoife</h1>
+      <p>2.30pm, July 5, 2025 • Ballymaloe House</p>
+      <div class="flower-image">
+        <img src="flower.png" alt="Queen Anne's Lace" class="flower">
+      </div>
+     
+    </header>
+    
+    <!-- PIN Entry Screen -->
+    <div id="pin-screen" class="screen active">
+      <h2>Please RSVP</h2>
+      <p>Enter the 4-character PIN from your invitation.</p>
+      
+      <div class="pin-container">
+        <input type="text" id="pin-input" maxlength="4" placeholder="XXXX" autocomplete="off">
+        <button id="submit-pin" class="button">Submit</button>
+      </div>
+      
+      <div id="pin-error" class="error-message"></div>
+      <div class="love-text">
+        <img src="lol.png" alt="lots of love" class="love-text-img">
+      </div>
+    </div>
+    
+    <!-- RSVP Form Screen -->
+    <div id="rsvp-screen" class="screen">
+      <h2>Your Invitation</h2>
+      <div id="invitation-details"></div>
+      
+      <div class="couple-image">
+        <img src="timaoife.PNG" alt="Tim and Aoife" class="couple">
+      </div>
+      
+      <form id="rsvp-form">
+        <div id="guests-container"></div>
+        
+        <div class="form-buttons">
+          <button type="button" id="back-button" class="button button-secondary">Back</button>
+          <button type="submit" class="button">Confirm RSVP</button>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Confirmation Screen -->
+    <div id="confirmation-screen" class="screen">
+      <h2>Thank You</h2>
+      <p>Your RSVP has been submitted successfully.</p>
+      <p>We can't wait to share this next chapter together. Come ready for good food, drinks, and making memories!</p>
+      <div id="confirmation-details"></div>
+      
+      <div class="flower-image">
+        <img src="flower.png" alt="Queen Anne's Lace" class="flower">
+      </div>
+      
+      <div class="form-buttons">
+        <button id="start-over" class="button">Start Over</button>
+      </div>
+    </div>
+    
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+  </div>
+  
+  <script src="app.js"></script>
+</body>
+</html>
